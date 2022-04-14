@@ -1,0 +1,194 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大乘仙境</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .box {
+            width: 500px;
+            height: 400px;
+            border: 1px solid black
+        }
+    </style>
+</head>
+<script src="js/vue.js"></script>
+
+<body>
+    <div id="app">
+        <div>境界: 大乘{{n}}层 </div>
+        <div>炼体: 一转{{m}}层</div>
+        <div>仙气: {{qi}}</div>
+        <div>背包: 渡劫丹 {{dujie}}个 一转丹 {{zhuan}}个 仙草{{cao}}个</div>
+        <div>历练: <button @click="go">古木林</button> <button @click="go2">巨兽峰</button></div>
+        <div style="margin-top: 5px;">修炼：<button @click="start">开始修炼</button> <button @click="up">开始渡劫</button> <button @click="uped">百炼成钢</button></div>
+        <div style="margin-top: 10px;"> <button @click="clear">清空</button> <button @click="free">闭关</button></div>
+        <div class="box" style="overflow: scroll;margin-top: 10px;">
+            <ul>
+                <li v-for="item in list">{{item}}</li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                n: 1, //境界
+                m: 1, //炼体
+                qi: 0, //仙气
+                list: [],
+                dujie: 0, //渡劫丹
+                zhuan: 0, //一转丹
+                cao: 0, //仙草
+                guai: ["100年嗜血魔蛛", "200年地穴魔蛛", "150年幽冥魔虎", "400年古巨蟹"], //怪物组
+                guai2: ["1000年血影兽", "2300年墨魂兽", "3500年比蒙巨兽", "2999年狂暴巨熊", "5000年始祖巨人"],
+                bao: ["仙草", "仙草", "仙草", "渡劫丹", "仙草", "仙草", "仙草", "仙草", "一转丹", "仙草"],
+                bao2: ["仙草x3", "仙草", "仙草", "仙草x5", "渡劫丹", "一转丹", "仙草", "仙草", "仙草", "仙气水晶"], //宝组
+                ting: 0,
+            },
+            methods: {
+                up() {
+                    var that = this
+                    if (that.dujie > 0 && that.qi > 100) {
+                        var i = parseInt(Math.random() * 100)
+                        if (i > 70) {
+                            that.dujie -= 1
+                            that.qi -= 100
+                            that.n += 1
+                            that.list.push("经过九死一生的雷劫，你活了下来，境界突破了！")
+                        } else {
+                            that.dujie -= 1
+                            that.qi -= 70
+                            that.list.push("经过九死一生的雷劫，你虽然活了下来，但是你付出巨大的代价，境界倒退了！")
+                        }
+                    } else {
+                        that.list.push("你还没有准备好！")
+                    }
+                }, //开始渡劫
+                uped() {
+                    var that = this
+                    if (that.zhuan > 0 && that.qi > 100) {
+                        var i = parseInt(Math.random() * 100)
+                        if (i > 70) {
+                            that.zhuan -= 1
+                            that.qi -= 60
+                            that.m += 1
+                            that.list.push("你打破了身体的一层桎梏，精力充沛！")
+                        } else {
+                            that.zhuan -= 1
+                            that.qi -= 60
+                            that.list.push("你强行打破身体的桎梏，导致身体萎靡不振，大不如前！")
+                        }
+                    } else {
+                        that.list.push("你还没有准备好！")
+                    }
+                }, //炼体渡劫
+                start() {
+                    var that = this
+                    if (that.ting == 1) {
+                        that.list.push("盘地而坐，准备修炼······")
+                        var time = setInterval(function() {
+                            if (that.cao > 0) {
+                                that.cao -= 1
+                                that.qi += 5
+                                that.list.push("吸收消耗了1个仙草，仙气+5")
+                            } else {
+                                that.list.push("仙草不足，请出门历练获得仙草")
+                                clearInterval(time)
+                            }
+                        }, 5000)
+                    } else {
+                        that.list.push("外出历练中，请回家闭关！")
+                    }
+
+                }, //开始修炼
+                free() {
+                    this.ting = 1
+                }, //开始闭关
+                clear() {
+                    this.list = []
+                }, //清空信息
+                go() {
+                    var that = this
+                    that.ting = 0
+                    that.list.push("进入古木林开始历练······")
+                    var time = setInterval(function() {
+                        that.list.push("在古木林游历中······")
+                        if (that.ting == 1) {
+                            clearInterval(time)
+                        }
+                    }, 5000)
+                    var timer = setInterval(function() {
+                        var i = parseInt(Math.random() * that.guai.length)
+                        var guaied = that.guai[i] //随机怪
+                        var j = parseInt(Math.random() * that.bao.length)
+                        var baoed = that.bao[j] //随机宝物
+                        var obj = `遇到${guaied}经过殊死搏斗获得了${baoed}`
+                        console.log(j, baoed)
+                        that.list.push(obj)
+                        if (baoed == "仙草") {
+                            that.cao += 1
+                        } else if (baoed == "渡劫丹") {
+                            that.dujie += 1
+                        } else if (baoed == "一转丹") {
+                            that.zhuan += 1
+                        }
+                        if (that.ting == 1) {
+                            clearInterval(timer)
+                        }
+                    }, 8000)
+
+                }, //古木林历练
+                go2() {
+                    var that = this
+                    that.ting = 0
+                    if (that.n > 5 && that.m > 5) {
+                        that.list.push("进入巨兽峰开始历练······")
+                        var time = setInterval(function() {
+                            that.list.push("在巨兽峰游历中······")
+                            if (that.ting == 1) {
+                                clearInterval(time)
+                            }
+                        }, 5000)
+                        var timer = setInterval(function() {
+                            var i = parseInt(Math.random() * that.guai2.length)
+                            var guaied = that.guai2[i] //随机怪
+                            var j = parseInt(Math.random() * that.bao2.length)
+                            var baoed = that.bao2[j] //随机宝物
+                            var obj = `遇到${guaied}经过殊死搏斗获得了${baoed}`
+                            console.log(j, baoed)
+                            that.list.push(obj)
+                            if (baoed == "仙草") {
+                                that.cao += 1
+                            } else if (baoed == "渡劫丹") {
+                                that.dujie += 1
+                            } else if (baoed == "一转丹") {
+                                that.zhuan += 1
+                            } else if (baoed == "仙草x3") {
+                                that.cao += 3
+                            } else if (baoed == "仙草x5") {
+                                that.cao += 5
+                            } else if (baoed == "仙气水晶") {
+                                that.qi += 50
+                            }
+                            if (that.ting == 1) {
+                                clearInterval(timer)
+                            }
+                        }, 8000)
+                    } else {
+                        that.list.push("你的实力不足，超过大乘5层和炼体5层的实力才能进入巨兽峰······")
+                    }
+                } //巨兽峰历练
+            }
+        })
+    </script>
+</body>
+
+</html>
